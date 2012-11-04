@@ -1,0 +1,31 @@
+# Backup files #
+################
+*.swp
+*~
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+*.sqlite3
+
+# OS generated files #
+######################
+.DS_Store*
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# Idea project files #
+######################
+.idea
+
+# Other files #
+######################
+/.bundle
+/tmp
+git-remove-history.sh
+dump.rdb
+/urls.txt
+/robots.rb
