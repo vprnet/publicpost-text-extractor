@@ -1,6 +1,6 @@
-text-summarize
+text-extractor
 ==============
 
-A very simple and I mean very simple HTTP wrapper on top of the Summarize gem. Call /summarize?text=TEXT_HERE and you'll get the summarized text. Only other param is "ratio" which allows you to control how much the text is compacted.
+A very simple and I mean very simple HTTP wrapper on top of the Yomu gem. Call /extract?url=URL_HERE and you'll get the raw extracted text from the url or an error.
 
-Deployed on Heroku at: http://text-summarize.herokuapp.com/summarize?text=Your text to be summarized here&ratio=50
+Deployed on Heroku at: http://text-extractor.herokuapp.com/extract?url=http://news.google.com
