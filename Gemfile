@@ -1,7 +1,6 @@
 source 'http://rubygems.org'
-gem 'httpclient'
 gem 'foreman'
 gem 'rack'
 gem 'sinatra'
 gem 'unicorn'
-gem 'yomu', git: 'https://github.com/NearbyFYI/yomu'
+gem 'summarize'
