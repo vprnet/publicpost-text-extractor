@@ -9,13 +9,16 @@ require 'open-uri'
 get '/extract?*' do
   url = URI::encode(params[:url])
   response = @@http_client.get(url, :follow_redirect => true)
+  text = ""
   Timeout::timeout(60) {
-    text = safe_squeeze(Yomu.read(:text_main, response.body))
-    if text.split.size < 30
-      text = safe_squeeze(Yomu.read(:text, response.body))
+    if response.content_type.include?("text/html")
+      extraction_method = :text_main
+    else
+      extraction_method = :text
     end
-    return text
+    text = safe_squeeze(Yomu.read(extraction_method, response.body))
   }
+  return text
 end
 
 # Remove superfluous whitespaces from the given string
