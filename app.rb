@@ -13,14 +13,14 @@ get '/extract?*' do
   text = ""
 
   if response.content_type.include?("text/html")
-    text = Yomu.new(url).text
-  else
     text = Yomu.new(url).text_main
+  else
+    text = Yomu.new(url).text
   end
 
   # Sometimes we don't get enough text...
   if text.split(" ").size < 100
-    text = Yomu.new(url).text_main
+    text = Yomu.new(url).text
   end
 
   return safe_squeeze(text)
