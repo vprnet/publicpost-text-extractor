@@ -1,24 +1,29 @@
 require 'httpclient'
-require 'sinatra'
 require 'yomu'
-require 'open-uri'
+require 'sinatra'
 
 @@http_client = HTTPClient.new
 @@http_client.connect_timeout = 60
 
 get '/extract?*' do
   url = URI::encode(params[:url])
-  response = @@http_client.get(url, :follow_redirect => true)
+  response = @@http_client.head(url, :follow_redirect => true)
+  url = response.http_header.request_uri.to_s
+  puts ">>>> Headers for: (#{url}) #{response.headers}"
   text = ""
-  Timeout::timeout(60) {
-    if response.content_type.include?("text/html")
-      extraction_method = :text_main
-    else
-      extraction_method = :text
-    end
-    text = safe_squeeze(Yomu.read(extraction_method, response.body))
-  }
-  return text
+
+  if response.content_type.include?("text/html")
+    text = Yomu.new(url).text
+  else
+    text = Yomu.new(url).text_main
+  end
+
+  # Sometimes we don't get enough text...
+  if text.split(" ").size < 100
+    text = Yomu.new(url).text_main
+  end
+
+  return safe_squeeze(text)
 end
 
 # Remove superfluous whitespaces from the given string

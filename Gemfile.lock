@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/NearbyFYI/yomu
-  revision: d0a7b30d1ea95dae844bc99bedd19ab568576909
+  revision: b6dafb086fdd7df37c579e538acf1e7d141916d6
   specs:
     yomu (0.1.4)
 
