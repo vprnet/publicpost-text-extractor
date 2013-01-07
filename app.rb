@@ -11,12 +11,10 @@ get '/extract?*' do
   http_client = HTTPClient.new
   http_client.connect_timeout = 60
 
-  url = CGI::unescape(params[:url])
-  url = URI::encode(url)
-
-  response = http_client.head(url, :follow_redirect => true)
+  url  = URI::encode(CGI::unescape(params[:url]))
   guid = Digest::MD5.hexdigest(url)
 
+  response = http_client.head(url, :follow_redirect => true)
   filename = "#{settings.root}/downloaded/#{guid}-#{Time.now.to_i}"
 
   begin
