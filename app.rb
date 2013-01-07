@@ -1,24 +1,28 @@
 # encoding: UTF-8
+require 'cgi'
 require 'net/https'
 require 'httpclient'
 require 'yomu'
 require 'sinatra'
 
 get '/extract?*' do
+  text = ""
+
+  http_client = HTTPClient.new
+  http_client.connect_timeout = 60
+
+  url = CGI::unescape(params[:url])
+  url = URI::encode(url)
+
+  response = http_client.head(url, :follow_redirect => true)
+  guid = Digest::MD5.hexdigest(url)
+
+  filename = "#{settings.root}/downloaded/#{guid}-#{Time.now.to_i}"
+
   begin
-    text = ""
-
-    http_client = HTTPClient.new
-    http_client.connect_timeout = 60
-
-    url = URI::encode(params[:url])
-    response = http_client.head(url, :follow_redirect => true)
-    guid = Digest::MD5.hexdigest(url)
-    filename = "#{settings.root}/downloaded/#{guid}-#{Time.now.to_i}"
     file = open(filename, 'wb')
-
-    # Chunk the download out to a temp file so that we keep memory limits low
     begin
+      # Chunk the download out to a temp file so that we keep memory limits low
       http_client.get_content(url, :follow_redirect => true) do |chunk|
         file.write(chunk)
       end
@@ -39,12 +43,9 @@ get '/extract?*' do
       yomu = Yomu.new filename
       text = yomu.text
     end
-
   ensure
     # Clean up the temp file
     File.delete(filename)
-
-    #httpclient = nil
   end
 
   return safe_squeeze(text)
