@@ -14,13 +14,14 @@ get '/extract?*' do
   url  = URI::encode(CGI::unescape(params[:url]))
   guid = Digest::MD5.hexdigest(url)
 
+  response = http_client.head(url, :follow_redirect => true)
   filename = "#{settings.root}/downloaded/#{guid}-#{Time.now.to_i}"
 
   begin
     file = open(filename, 'wb')
     begin
       # Chunk the download out to a temp file so that we keep memory limits low
-      response = http_client.get(url) do |chunk|
+      http_client.get_content(url) do |chunk|
         file.write(chunk)
       end
 
