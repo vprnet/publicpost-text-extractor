@@ -14,32 +14,31 @@ get '/extract?*' do
   url  = URI::encode(CGI::unescape(params[:url]))
   guid = Digest::MD5.hexdigest(url)
 
-  response = http_client.head(url, :follow_redirect => true)
   filename = "#{settings.root}/downloaded/#{guid}-#{Time.now.to_i}"
 
   begin
     file = open(filename, 'wb')
     begin
       # Chunk the download out to a temp file so that we keep memory limits low
-      http_client.get_content(url, :follow_redirect => true) do |chunk|
+      response = http_client.get(url) do |chunk|
         file.write(chunk)
+      end
+
+      # Extract the text from the document
+      yomu = Yomu.new filename
+      if response.content_type.include?("text/html")
+        text = yomu.text_main
+      else
+        text = yomu.text
+      end
+
+      # Sometimes we don't get enough text...
+      if text.split(" ").size < 100
+        yomu = Yomu.new filename
+        text = yomu.text
       end
     ensure
       file.close
-    end
-
-    # Extract the text from the document
-    yomu = Yomu.new filename
-    if response.content_type.include?("text/html")
-      text = yomu.text_main
-    else
-      text = yomu.text
-    end
-
-    # Sometimes we don't get enough text...
-    if text.split(" ").size < 100
-      yomu = Yomu.new filename
-      text = yomu.text
     end
   ensure
     # Clean up the temp file
